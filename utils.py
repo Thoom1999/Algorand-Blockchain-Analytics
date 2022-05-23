@@ -1,70 +1,63 @@
+from typing import Callable
 import requests
+import json
+from functools import reduce
 
-base_URL = "http://176.9.25.121:8980/"
+base_URL = "http://176.9.25.121:8980"
 
-def getBlockInfos(blockNumber: str): 
+def flat(list_of_lists: list) -> list:
+    return reduce(list.__add__, list_of_lists)
+
+def flatMap(fn: Callable, iter: list) -> list:
+    return flat(map(fn, iter))
+
+def prettyPrint(obj):
+    print(json.dumps(obj, indent=4, sort_keys=True))
+
+def getJSON(url: str):
     try:
-        response = requests.get(base_URL + "v2/blocks/" + blockNumber)
+        response = requests.get(url)
         if response.status_code == 200: 
             return response.json()
         else: 
-            print("Problem occur")
+            print(f"[{response.status_code}]", response.json()['message'])
     except requests.exceptions.HTTPError as e:
         print(e.response.text) 
 
-def getCreatedAssetByBlock(blockNumber: str): 
-    try:
-        response = requests.get(base_URL + "v2/blocks/" + blockNumber)
-        if response.status_code == 200: 
-            transactions = response.json()["transactions"]
-            result = dict()
-            for tx in transactions:
-                try:
-                    creator = tx["asset-config-transaction"]["params"]["creator"]
-                    asset_id = tx["created-asset-index"]
-                    result["creator"] = creator
-                    result["asset_id"] = asset_id
-                except: 
-                    continue
-            return result
-        else: 
-            print("Problem occur")
-    except requests.exceptions.HTTPError as e:
-        print(e.response.text) 
+def getBlockInfos(block_number: int): 
+    return getJSON(f"{base_URL}/v2/blocks/{str(block_number)}")
+
+def getAccountInfo(addr: str):
+    return getJSON(f"{base_URL}/v2/accounts/{str(addr)}")
+
+def getCreatedAssetByBlock(block_number: int): 
+    block = getBlockInfos(block_number)
+    return list(map(
+        lambda tx: {
+            "creator": tx["asset-config-transaction"]["params"]["creator"],
+            "asset_id":  tx["created-asset-index"]
+        },
+        filter(
+            lambda tx: "asset-config-transaction" in tx 
+                and "created-asset-index" in tx, 
+            block['transactions']
+        )
+    ))
 
 def createdTokenByAddress(addr: str): 
-    try:
-        response = requests.get(base_URL + "v2/accounts/" + addr)
-        if response.status_code == 200: 
-            result = response.json()["account"]["created-assets"]
-            createdTokens = dict()
-            for token in result: 
-                createdTokens[token["index"]] = token["created-at-round"]
-            data = dict()
-            data[addr] = createdTokens
-            return data
-        else: 
-            print("Problem occur")
-    except requests.exceptions.HTTPError as e:
-        print(e.response.text) 
+    return getAccountInfo(addr)["account"]["created-assets"]
+    
+def getAssetTxInBlock(block_number: int, asset_id: int): 
+    block = getBlockInfos(block_number)
+    return list(filter(
+        lambda tx: "asset-transfer-transaction" in tx 
+            and str(tx["asset-transfer-transaction"]["asset-id"]) == str(asset_id),
+        block['transactions']
+    ))
 
-def getTxAssociatedToAnAsset(blockNumber: str, asset_id: str): 
-    try:
-        response = requests.get(base_URL + "v2/blocks/" + blockNumber)
-        if response.status_code == 200: 
-            transactions = response.json()["transactions"]
-            result = dict()
-            listTx = []
-            for tx in transactions:
-                try:
-                    if str(tx["asset-transfer-transaction"]["asset-id"]) == asset_id: 
-                        listTx.append([tx["asset-transfer-transaction"]["amount"], tx["asset-transfer-transaction"]["receiver"]])
-                except:
-                    continue
-            result[blockNumber] = listTx
-            return result
-        else: 
-            print("Problem occur")
-    except requests.exceptions.HTTPError as e:
-        print(e.response.text) 
+def getAssetTxInRange(start_block: int, end_block: int, asset_id: int):
+    return flatMap(
+        lambda block_n: getAssetTxInBlock(block_n, asset_id),
+        range(start_block, end_block)
+    )
 
