@@ -2,6 +2,7 @@ from typing import Callable
 import requests
 import json
 from functools import reduce
+import pandas as pd
 
 base_URL = "http://176.9.25.121:8980"
 
@@ -34,8 +35,12 @@ def getCreatedAssetByBlock(block_number: int):
     block = getBlockInfos(block_number)
     return list(map(
         lambda tx: {
+            "asset_id":  tx["created-asset-index"], 
+            # "name": tx["asset-config-transaction"]["params"]["name"],
             "creator": tx["asset-config-transaction"]["params"]["creator"],
-            "asset_id":  tx["created-asset-index"]
+            "total": tx["asset-config-transaction"]["params"]["total"], 
+            "decimals": tx["asset-config-transaction"]["params"]["decimals"],
+            # "tx_type": tx["tx-type"]
         },
         filter(
             lambda tx: "asset-config-transaction" in tx 
@@ -61,3 +66,38 @@ def getAssetTxInRange(start_block: int, end_block: int, asset_id: int):
         range(start_block, end_block)
     )
 
+
+# Goes through all blocks from end to start
+# and saving the information as a .csv after savestep number of blocks
+def getCreatedTokensInRangeCSV(start, end, outpath, savestep): 
+    df = pd.DataFrame(columns=['asset_id', 'creator', 'total', 'tx_type', 'block'])
+    with open(outpath, "w") as f:
+        df.to_csv(f, header=True, index=False)
+
+    cnt = 0
+    for i in range(end, start-1, -1):
+        cnt += 1
+        print(str(cnt)+"/"+str(end-start))
+        try: 
+            assets = getCreatedAssetByBlock(i)
+            assets = [dict(item, **{'block':i}) for item in assets]
+
+            if len(assets) == 0:
+                continue
+            else:
+                df = df.append(assets, ignore_index=True, sort=False)
+        except TypeError: 
+            continue
+
+        if cnt in list(range(1, end - start, savestep)): 
+            with open(outpath, "a") as f:
+                df.to_csv(f, header=False, index=False)
+
+            del df
+            df = pd.DataFrame(columns=['asset_id', 'creator', 'total', 'tx_type', 'block'])
+    
+    with open(outpath, "a") as f:
+                df.to_csv(f, header=False, index=False)
+    
+
+    return(df)
