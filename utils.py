@@ -3,6 +3,8 @@ import requests
 import json
 from functools import reduce
 import pandas as pd
+from tinyman.v1.contracts import get_pool_logicsig
+
 
 base_URL = "http://176.9.25.121:8980"
 
@@ -32,22 +34,32 @@ def getAccountInfo(addr: str):
     return getJSON(f"{base_URL}/v2/accounts/{str(addr)}")
 
 def getCreatedAssetByBlock(block_number: int): 
-    block = getBlockInfos(block_number)
-    return list(map(
-        lambda tx: {
+    blockinfo = list(filter(lambda tx: "asset-config-transaction" in tx 
+                    and "created-asset-index" in tx, 
+                getBlockInfos(block_number)["transactions"]))
+
+    assets_in_block = list()
+    for tx in blockinfo:
+        temp_dict = {
             "asset_id":  tx["created-asset-index"], 
-            # "name": tx["asset-config-transaction"]["params"]["name"],
             "creator": tx["asset-config-transaction"]["params"]["creator"],
+            "manager": "None", 
+            "reserve": "None", 
+            "freeze": "None",
             "total": tx["asset-config-transaction"]["params"]["total"], 
             "decimals": tx["asset-config-transaction"]["params"]["decimals"],
-            # "tx_type": tx["tx-type"]
-        },
-        filter(
-            lambda tx: "asset-config-transaction" in tx 
-                and "created-asset-index" in tx, 
-            block['transactions']
-        )
-    ))
+        }
+        if "manager" in tx["asset-config-transaction"]["params"].keys(): 
+            temp_dict["manager"] = tx["asset-config-transaction"]["params"]["manager"]
+        if "reserve" in tx["asset-config-transaction"]["params"].keys():
+            temp_dict["reserve"] = tx["asset-config-transaction"]["params"]["reserve"]
+        if "freeze" in tx["asset-config-transaction"]["params"].keys():
+            temp_dict["freeze"] = tx["asset-config-transaction"]["params"]["freeze"]
+        
+        assets_in_block.append(temp_dict)
+        del temp_dict
+    
+    return(assets_in_block)
 
 def createdTokenByAddress(addr: str): 
     return getAccountInfo(addr)["account"]["created-assets"]
@@ -70,7 +82,7 @@ def getAssetTxInRange(start_block: int, end_block: int, asset_id: int):
 # Goes through all blocks from end to start
 # and saving the information as a .csv after savestep number of blocks
 def getCreatedTokensInRangeCSV(start, end, outpath, savestep): 
-    df = pd.DataFrame(columns=['asset_id', 'creator', 'total', 'tx_type', 'block'])
+    df = pd.DataFrame(columns=['asset_id', 'creator', 'manager', 'reserve', 'freeze', 'total', 'decimals', 'block'])
     with open(outpath, "w") as f:
         df.to_csv(f, header=True, index=False)
 
@@ -94,10 +106,29 @@ def getCreatedTokensInRangeCSV(start, end, outpath, savestep):
                 df.to_csv(f, header=False, index=False)
 
             del df
-            df = pd.DataFrame(columns=['asset_id', 'creator', 'total', 'tx_type', 'block'])
+            df = pd.DataFrame(columns=['asset_id', 'creator', 'manager', 'reserve', 'freeze', 'total', 'decimals', 'block'])
     
     with open(outpath, "a") as f:
                 df.to_csv(f, header=False, index=False)
     
 
     return(df)
+
+# Returns the round at which the pool is created for the asset pair asset1_id and ALGO (asset_id = 0)
+def getPoolCreationRound(asset1_id, asset2_id = 0): 
+    MAINNET_VALIDATOR_APP_ID = 552635992
+    try:
+        pool_logicsig = get_pool_logicsig(MAINNET_VALIDATOR_APP_ID, asset1_id, asset2_id)
+        acc_info = getAccountInfo(pool_logicsig.address())
+        creation_round = acc_info["account"]["created-assets"][0]["created-at-round"]
+        return(creation_round)
+    except:
+        return(-1)
+
+def getPoolAddr(asset1_id, asset2_id = 0): 
+    MAINNET_VALIDATOR_APP_ID = 552635992
+    try:
+        pool_logicsig = get_pool_logicsig(MAINNET_VALIDATOR_APP_ID, asset1_id, asset2_id)
+        return(pool_logicsig.address())
+    except:
+        return("None")
