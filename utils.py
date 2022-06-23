@@ -18,6 +18,9 @@ def prettyPrint(obj):
     print(json.dumps(obj, indent=4, sort_keys=True))
 
 def getJSON(url: str):
+    """
+    Returns the json repsonse of the api call. 
+    """
     try:
         response = requests.get(url)
         if response.status_code == 200: 
@@ -28,12 +31,21 @@ def getJSON(url: str):
         print(e.response.text) 
 
 def getBlockInfos(block_number: int): 
+    """
+    Returns all available information regarding one specific block.
+    """
     return getJSON(f"{base_URL}/v2/blocks/{str(block_number)}")
 
 def getAccountInfo(addr: str):
+    """
+    Returns all available information regarding one specific address.
+    """
     return getJSON(f"{base_URL}/v2/accounts/{str(addr)}")
 
 def getCreatedAssetByBlock(block_number: int): 
+    """
+    Returns all assets created in one specific block.
+    """
     blockinfo = list(filter(lambda tx: "asset-config-transaction" in tx 
                     and "created-asset-index" in tx, 
                 getBlockInfos(block_number)["transactions"]))
@@ -62,9 +74,15 @@ def getCreatedAssetByBlock(block_number: int):
     return(assets_in_block)
 
 def createdTokenByAddress(addr: str): 
+    """
+    Returns all tokens/assets created by one address.
+    """
     return getAccountInfo(addr)["account"]["created-assets"]
     
-def getAssetTxInBlock(block_number: int, asset_id: int): 
+def getAssetTxInBlock(block_number: int, asset_id: int):
+    """
+    Returns all asset txs in a specific block.
+    """ 
     block = getBlockInfos(block_number)
     return list(filter(
         lambda tx: "asset-transfer-transaction" in tx 
@@ -73,15 +91,19 @@ def getAssetTxInBlock(block_number: int, asset_id: int):
     ))
 
 def getAssetTxInRange(start_block: int, end_block: int, asset_id: int):
+    """
+    Returns all asset txs in a certain range.
+    """
     return flatMap(
         lambda block_n: getAssetTxInBlock(block_n, asset_id),
         range(start_block, end_block)
     )
 
 
-# Goes through all blocks from end to start
-# and saving the information as a .csv after savestep number of blocks
 def getCreatedTokensInRangeCSV(start, end, outpath, savestep): 
+    """
+    Goes through all blocks from end to start and saves the information as a .csv after savestep number of blocks
+    """
     df = pd.DataFrame(columns=['asset_id', 'creator', 'manager', 'reserve', 'freeze', 'total', 'decimals', 'block'])
     with open(outpath, "w") as f:
         df.to_csv(f, header=True, index=False)
@@ -114,8 +136,11 @@ def getCreatedTokensInRangeCSV(start, end, outpath, savestep):
 
     return(df)
 
-# Returns the round at which the pool is created for the asset pair asset1_id and ALGO (asset_id = 0)
 def getPoolCreationRound(asset1_id, asset2_id = 0): 
+    """
+    Returns the round at which the pool is created for the asset pair asset1_id and ALGO (asset_id = 0)
+    """
+
     MAINNET_VALIDATOR_APP_ID = 552635992
     try:
         pool_logicsig = get_pool_logicsig(MAINNET_VALIDATOR_APP_ID, asset1_id, asset2_id)
@@ -126,9 +151,87 @@ def getPoolCreationRound(asset1_id, asset2_id = 0):
         return(-1)
 
 def getPoolAddr(asset1_id, asset2_id = 0): 
+    """
+    Returns the liquidity pool's address. 
+    """
     MAINNET_VALIDATOR_APP_ID = 552635992
     try:
         pool_logicsig = get_pool_logicsig(MAINNET_VALIDATOR_APP_ID, asset1_id, asset2_id)
         return(pool_logicsig.address())
     except:
         return("None")
+
+def checkIfTxIsExternal(tx, asset_info): 
+    """
+    Checks if:\n 
+    - the sender or receiver address of the tx is not the manager, reserve or freeze address of the pool\n
+    - and if the sender or receiver of the tx is the pool address\n 
+    - and the tx amount is > 0\n
+    \n
+    External Txs: Txs which are not connected to the controlling entities of the pool.\n
+    Internal Txs: Txs where the receiver or sender address is either the manager, reserve and/or freeze address.\n
+    \n
+    Parameters
+    ----------
+    - tx: dict
+        A dictionary with all the tx info, i.e. the output from getAssetTxInRange().\n
+    - asset_info: dict
+        A dictionary with all the info about the asset, i.e. creator, manager, reserve & freeze address, total, decimals, block, pool_creation_round and pool_address.\n
+    Returns
+    -------
+    - True/False
+        True: if tx is external and 
+        False: if tx is internal
+    """
+    if tx["asset-transfer-transaction"]["receiver"] in [asset_info['creator'], asset_info['manager'], asset_info['reserve'], asset_info['freeze']] or\
+        tx["sender"] in [asset_info['creator'], asset_info['manager'], asset_info['reserve'], asset_info['freeze']]: 
+        return(False)
+    elif tx["asset-transfer-transaction"]["receiver"] != asset_info['pool_address'] and\
+        tx["sender"] != asset_info['pool_address']:
+        return(False)
+    elif tx["asset-transfer-transaction"]["amount"] <= 0: 
+        return(False)
+    else: 
+        return(True)
+
+def checkIfBuy(tx, asset_info): 
+    """
+    Checks if address in external tx buys tokens from the pool or if the address sells tokens to the pool.\n
+    """    
+
+    if tx["sender"] == asset_info['pool_address']: 
+        return(True)
+    else: 
+        return(False)
+
+def getTxOfAddr(account_id, asset_id, N = None , amt_gt = 0, amt_lt = None):
+    """
+    Gets N txs of the the account_id regarding asset_id and where the amount is greater than amt_gt
+    and lower than amt_lt.\n
+    Parameters
+    ----------
+    - amt_gt: int (Default = 0);
+        Results should have an amount greater than this value. MicroAlgos are the default currency unless an asset-id is provided, in which case the asset will be used.\n
+    - amt_lt: int (Default = None);
+        Results should have an amount less than this value.\n
+    """
+    base_query = f"{base_URL}/v2/accounts/{account_id}/transactions?asset-id={asset_id}"
+    
+    if N is not None and amt_lt is not None: 
+        return(getJSON(f"{base_query}&limit={N}&currency-less-than={amt_lt}")['transactions'])
+    elif N is None and amt_lt is not None: 
+        return(getJSON(f"{base_query}&currency-less-than={amt_lt}")['transactions'])
+    elif N is not None and amt_lt is None: 
+        return(getJSON(f"{base_query}&limit={N}")['transactions'])
+    else: 
+        return(getJSON(f"{base_query}")['transactions'])
+
+def tokenDictLookup(tokendict, assetid): 
+    """
+    Looks up the tokendict to and returns the dict with the information regarding this token.
+    """
+    for token in tokendict:
+        if token['asset_id'] == assetid: 
+            return(token)
+        else: 
+            continue
