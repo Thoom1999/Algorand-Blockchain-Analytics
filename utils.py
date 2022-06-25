@@ -44,7 +44,7 @@ def getAccountInfo(addr: str):
 
 def getCreatedAssetByBlock(block_number: int): 
     """
-    Returns all assets created in one specific block.
+    Returns all created assets and their information in one specific block.
     """
     blockinfo = list(filter(lambda tx: "asset-config-transaction" in tx 
                     and "created-asset-index" in tx, 
@@ -90,15 +90,15 @@ def getAssetTxInBlock(block_number: int, asset_id: int):
         block['transactions']
     ))
 
-def getAssetTxInRange(start_block: int, end_block: int, asset_id: int):
+def getAssetTxInRange(start_block: int, end_block: int, asset_id: int, amt_gt: int, pool_addr: str):
     """
-    Returns all asset txs in a certain range.
+    Returns all asset txs in a certain range where pool_address is involved and amount >= min_amt. 
     """
-    return flatMap(
-        lambda block_n: getAssetTxInBlock(block_n, asset_id),
-        range(start_block, end_block)
-    )
-
+    query = f"{base_URL}/v2/assets/{asset_id}/transactions?address={pool_addr}&min-round={start_block}&max-round={end_block}&currency-greater-than={amt_gt}"
+    try:
+        return(getJSON(query)['transactions'])
+    except TypeError:
+        pass
 
 def getCreatedTokensInRangeCSV(start, end, outpath, savestep): 
     """
@@ -133,7 +133,6 @@ def getCreatedTokensInRangeCSV(start, end, outpath, savestep):
     with open(outpath, "a") as f:
                 df.to_csv(f, header=False, index=False)
     
-
     return(df)
 
 def getPoolCreationRound(asset1_id, asset2_id = 0): 
@@ -197,8 +196,9 @@ def checkIfTxIsExternal(tx, asset_info):
 def checkIfBuy(tx, asset_info): 
     """
     Checks if address in external tx buys tokens from the pool or if the address sells tokens to the pool.\n
+    - tx: dict with all the tx infos
+    - asset_info: dict with all the asset infos
     """    
-
     if tx["sender"] == asset_info['pool_address']: 
         return(True)
     else: 
@@ -228,10 +228,53 @@ def getTxOfAddr(account_id, asset_id, N = None , amt_gt = 0, amt_lt = None):
 
 def tokenDictLookup(tokendict, assetid): 
     """
-    Looks up the tokendict to and returns the dict with the information regarding this token.
+    Looks up the asset_id in the tokendict and returns the dict with the information regarding this token.
     """
     for token in tokendict:
         if token['asset_id'] == assetid: 
             return(token)
         else: 
             continue
+
+def getMatchingBuySellTxs(txs_lst, similarity = 0.05): 
+    """
+    Returns the account addresses of those accounts in the external txs_list which bought AND sold a similar amount of tokens within the given txs_lst.\n
+    
+    Parameters
+    ----------
+    - txs_list: list of dict; with one dict of the txs info per txs including the key 'type'\n
+    - similarity: double; buy_sell_ratio <= similarity\n
+    
+    Returns
+    ----------
+    - list of addresses
+    """
+    filtered_txs = dict()
+    for txs in txs_lst: 
+        tx_type = txs['type']
+        amt = txs['asset-transfer-transaction']['amount']
+
+        if tx_type == 'buy': 
+            bs_addr = txs['asset-transfer-transaction']['receiver']
+        else: 
+            bs_addr = txs['sender']
+
+        if bs_addr not in filtered_txs.keys(): 
+            filtered_txs[bs_addr] = [0, 0] # [bough amount, sold amount]
+        if tx_type == 'buy': 
+            filtered_txs[bs_addr][0] += amt
+        else: 
+            filtered_txs[bs_addr][1] += amt
+
+    detected_addr = list()
+    for addr, bs in filtered_txs.items():
+        if min(bs) == 0: 
+            continue
+        else:
+            buy_sell_ratio = max(bs)/min(bs) - 1 # How much % were bought/sold more 
+            if buy_sell_ratio <= similarity: 
+                detected_addr.append(addr)
+            else: 
+                continue
+    
+    return(detected_addr)
