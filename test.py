@@ -1,4 +1,5 @@
 from utils import *
+import time
 
 ############## Block Informations ###################
 # print(getBlockInfos("8729485"))
@@ -30,4 +31,14 @@ from utils import *
 for block_n in range(18951072+100, 18951072+150):
     prettyPrint(getTxAssociatedToAsset(block_n, 576840807))
 """
-prettyPrint(getAssetTxInRange(start_block=18951072+100, end_block=18951072+250, asset_id=576840807))
+# prettyPrint(getAssetTxInRange(start_block=18951072+100, end_block=18951072+250, asset_id=576840807))
+
+print(createChunk(10, 103, 13))
+
+print(createChunk(1, 100, 10))
+
+def stuff(): 
+    print("coucou")
+    time.sleep(2)
+
+threads = createAndExecuteThreads(4, stuff)

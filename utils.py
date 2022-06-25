@@ -1,9 +1,11 @@
+from concurrent.futures import thread
 from typing import Callable
 import requests
 import json
 from functools import reduce
 import pandas as pd
 from tinyman.v1.contracts import get_pool_logicsig
+import threading
 
 
 base_URL = "http://176.9.25.121:8980"
@@ -278,3 +280,23 @@ def getMatchingBuySellTxs(txs_lst, similarity = 0.05):
                 continue
     
     return(detected_addr)
+
+def createChunk(start: int, end: int, size: int) -> list:
+    """Divide a range of numbers in chunks of size 'size'"""
+    result: list = []
+    end += 1
+    step: int = int((end - start) / size)
+    for i in range(step): 
+        result.append(list(range(start + i * size, start + (i + 1) * size)))
+    if start + step * size != end: 
+        result.append(list(range(start + step * size, end)))
+    return result
+
+def createAndExecuteThreads(nbr: int, func) -> None: 
+    threads: list = []
+    for i in range(nbr): 
+        t = threading.Thread(target=func)
+        t.start()
+        threads.append(t)
+    for thread in threads: 
+        thread.join()
