@@ -300,3 +300,13 @@ def createAndExecuteThreads(nbr: int, func) -> None:
         threads.append(t)
     for thread in threads: 
         thread.join()
+
+def addLiquidityForFirstTime(poolAddr: str, liquidityToken: int): 
+    query = getJSON(f"{base_URL}/v2/accounts/{poolAddr}/transactions")
+    txs = list(filter(lambda tx: "asset-transfer-transaction" in tx,
+                query["transactions"]))
+    r = {}
+    for tx in txs: 
+        if tx["asset-transfer-transaction"]["asset-id"] == liquidityToken: 
+            r = tx["confirmed-round"]
+    print(r)
