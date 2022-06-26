@@ -1,9 +1,12 @@
 from typing import Callable
+from matplotlib.pyplot import get
 import requests
 import json
 from functools import reduce
 import pandas as pd
+from sympy import limit
 from tinyman.v1.contracts import get_pool_logicsig
+import time
 
 
 base_URL = "http://176.9.25.121:8980"
@@ -17,7 +20,7 @@ def flatMap(fn: Callable, iter: list) -> list:
 def prettyPrint(obj):
     print(json.dumps(obj, indent=4, sort_keys=True))
 
-def getJSON(url: str):
+def getJSON(url: str, cnt = 0):
     """
     Returns the json repsonse of the api call. 
     """
@@ -25,7 +28,11 @@ def getJSON(url: str):
         response = requests.get(url)
         if response.status_code == 200: 
             return response.json()
-        else: 
+        elif cnt <= 3 & 'timeout' in response.json()['message']: 
+            time.sleep(3)
+            cnt += 1
+            getJSON(url, cnt)
+        else:
             print(f"[{response.status_code}]", response.json()['message'])
     except requests.exceptions.HTTPError as e:
         print(e.response.text) 
@@ -204,9 +211,9 @@ def checkIfBuy(tx, asset_info):
     else: 
         return(False)
 
-def getTxOfAddr(account_id, asset_id, N = None , amt_gt = 0, amt_lt = None):
+def getTxOfAddr(account_id, start_round = None, end_round = None, asset_id = None, N = None , amt_gt = 0, amt_lt = None, tx_type = None):
     """
-    Gets N txs of the the account_id regarding asset_id and where the amount is greater than amt_gt
+    Gets txs between start_round and end_round of the the account_id where the amount is greater than amt_gt
     and lower than amt_lt.\n
     Parameters
     ----------
@@ -215,16 +222,30 @@ def getTxOfAddr(account_id, asset_id, N = None , amt_gt = 0, amt_lt = None):
     - amt_lt: int (Default = None);
         Results should have an amount less than this value.\n
     """
-    base_query = f"{base_URL}/v2/accounts/{account_id}/transactions?asset-id={asset_id}"
-    
-    if N is not None and amt_lt is not None: 
-        return(getJSON(f"{base_query}&limit={N}&currency-less-than={amt_lt}")['transactions'])
-    elif N is None and amt_lt is not None: 
-        return(getJSON(f"{base_query}&currency-less-than={amt_lt}")['transactions'])
-    elif N is not None and amt_lt is None: 
-        return(getJSON(f"{base_query}&limit={N}")['transactions'])
-    else: 
-        return(getJSON(f"{base_query}")['transactions'])
+    add_args = {'min-round':start_round, 'max-round':end_round, 'asset-id':asset_id, 'limit':N, 'currency-greater-than':amt_gt, 'currency-less-than':amt_lt, 'tx-type': tx_type}
+
+    cnt = 0
+    base_query = f"{base_URL}/v2/accounts/{account_id}/transactions"
+    for arg in add_args.keys(): 
+        if add_args[arg] is not None:
+            if cnt == 0: 
+                base_query += "?"+arg+"="+str(add_args[arg])
+                cnt += 1
+            else: 
+                base_query += "&"+arg+"="+str(add_args[arg])
+        else: 
+            continue
+
+    try: 
+        req = getJSON(f"{base_query}")
+        next = req['next-token']
+        while len(getJSON(base_query+"&next="+str(next))['transactions'])>0:
+            req['transactions'] += getJSON(base_query+"&next="+str(next))['transactions']
+            next = getJSON(base_query+"&next="+str(next))['next-token']
+        return(req['transactions'])
+    except: 
+        return(None)
+
 
 def tokenDictLookup(tokendict, assetid): 
     """
@@ -278,3 +299,62 @@ def getMatchingBuySellTxs(txs_lst, similarity = 0.05):
                 continue
     
     return(detected_addr)
+
+def getLiquidityToken(asset_id, asset2_id = 0): 
+    """
+    Get the liquidity token (pool token) of the asset_id
+    """
+    MAINNET_VALIDATOR_APP_ID = 552635992
+    try: 
+        pool_logicsig = get_pool_logicsig(MAINNET_VALIDATOR_APP_ID, asset_id, asset2_id)
+        acc_info = getAccountInfo(pool_logicsig.address())['account']['assets']
+        for ass in acc_info: 
+            if ass['asset-id'] != asset_id: 
+                return(ass['asset-id'])
+            else: 
+                continue
+    except:
+        return(-1)     
+
+
+# def oneFuncToRuleThemAll(token_dict_path, txs_range):
+# If Peters dict does not include pool creation round or pool creation address 
+token_dict_path = "assetinfos_20000000_21000000.json"
+with open(token_dict_path, "r") as fin: 
+        token_dict = json.load(fin)
+
+tokens_w_pool = list()
+for token in token_dict: 
+    for acc in ['manager', 'reserve', 'freeze', 'creator']: 
+        if acc not in token.keys(): 
+            token[acc] = 'None'
+    token['pool_creation_round'] = getPoolCreationRound(token['asset_id'])
+    if token['pool_creation_round'] != -1: 
+        token['pool_address'] = getPoolAddr(token['asset_id'])
+        tokens_w_pool.append(token)
+    else: 
+        continue
+
+###############################
+token_dict_w_ext_txs = []
+for asset in token_dict: 
+    asset['external_txs'] = list()
+    # Add asset['pool_liquidity_add'] with function
+    # and change getAssetTxInRange to get all txs which interact with the liquidity pool without the 
+    token_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = asset['asset_id'])
+    algo_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = 0)
+    # txs_in_range = getAssetTxInRange(, , asset["asset_id"], 0, asset['pool_address'])
+    # ########## Change below
+    for txs in txs_in_range: 
+        if checkIfTxIsExternal(txs, asset): 
+            if checkIfBuy(txs, asset): 
+                txs['type'] = 'buy'
+                asset['external_txs'].append(txs)
+            else: 
+                txs['type'] = 'sell'
+                asset['external_txs'].append(txs)
+        else: 
+            continue
+    if len(asset['external_txs']) >= 2: 
+        token_dict_w_ext_txs.append(asset)
+    #  to here
