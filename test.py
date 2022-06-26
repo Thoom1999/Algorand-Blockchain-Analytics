@@ -1,4 +1,5 @@
 from utils import *
+import time
 
 ############## Block Informations ###################
 # print(getBlockInfos("8729485"))
@@ -30,4 +31,24 @@ from utils import *
 for block_n in range(18951072+100, 18951072+150):
     prettyPrint(getTxAssociatedToAsset(block_n, 576840807))
 """
-prettyPrint(getAssetTxInRange(start_block=18951072+100, end_block=18951072+250, asset_id=576840807))
+# prettyPrint(getAssetTxInRange(start_block=18951072+100, end_block=18951072+250, asset_id=576840807))
+
+# print(createChunk(10, 103, 13))
+
+# print(createChunk(1, 100, 10))
+
+# def stuff(): 
+#     print("coucou")
+#     time.sleep(2)
+
+# threads = createAndExecuteThreads(4, stuff)
+
+# print(calculatePrice(10, 20, "a", "a"))
+# print(getAssetTxInBlock(20821904, 444035862))
+# print(getAlgoTransfer(20821904, "MAPEFN7K2M5Z4TPOVOXHVBTW2M46SQPROBLGYXAZ56K4SHTEUCOOZCMRZE", "2FJLXZ4QPMN5JFJ635B755Q4VH7AB4QCQA264GAEHJXLMCYEPLOUVODZLM"))
+# print(getBlockInfos(20821904))
+
+# print(getPoolAddr(444035862))
+
+print(addLiquidityForFirstTime("UEMGT2KYO57HWZANRPAYZGECTS5TFT5KAJ3CVEN6QH6V3CLAL5UOV7Q4NQ", 581879854))
+print(addLiquidityForFirstTime("UEMGT2KYO57HWZANRPAYZGECTS5TFT5KAJ3CVEN6QH6V3CLAL5UOV7Q4NQ", 581880471))

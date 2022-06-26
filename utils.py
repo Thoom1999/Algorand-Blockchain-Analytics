@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 from typing import Callable
 from matplotlib.pyplot import get
 import requests
@@ -6,8 +7,8 @@ from functools import reduce
 import pandas as pd
 from sympy import limit
 from tinyman.v1.contracts import get_pool_logicsig
+import threading
 import time
-
 
 base_URL = "http://176.9.25.121:8980"
 
@@ -300,6 +301,36 @@ def getMatchingBuySellTxs(txs_lst, similarity = 0.05):
     
     return(detected_addr)
 
+def createChunk(start: int, end: int, size: int) -> list:
+    """Divide a range of numbers in chunks of size 'size'"""
+    result: list = []
+    end += 1
+    step: int = int((end - start) / size)
+    for i in range(step): 
+        result.append(list(range(start + i * size, start + (i + 1) * size)))
+    if start + step * size != end: 
+        result.append(list(range(start + step * size, end)))
+    return result
+
+def createAndExecuteThreads(nbr: int, func) -> None: 
+    threads: list = []
+    for i in range(nbr): 
+        t = threading.Thread(target=func)
+        t.start()
+        threads.append(t)
+    for thread in threads: 
+        thread.join()
+
+def addLiquidityForFirstTime(poolAddr: str, liquidityToken: int): 
+    query = getJSON(f"{base_URL}/v2/accounts/{poolAddr}/transactions")
+    txs = list(filter(lambda tx: "asset-transfer-transaction" in tx,
+                query["transactions"]))
+    r = {}
+    for tx in txs: 
+        if tx["asset-transfer-transaction"]["asset-id"] == liquidityToken: 
+            r = tx["confirmed-round"]
+    print(r)
+
 def getLiquidityToken(asset_id, asset2_id = 0): 
     """
     Get the liquidity token (pool token) of the asset_id
@@ -358,3 +389,4 @@ for asset in token_dict:
     if len(asset['external_txs']) >= 2: 
         token_dict_w_ext_txs.append(asset)
     #  to here
+

@@ -9,14 +9,14 @@ Step 1:
 Get all tokens in a certain range and save it as a csv.
 """
 # @ Thomas: uncomment here and maybe try some other block range below block 20676722
-# tokens = getCreatedTokensInRangeCSV(20676722, 20769721, "test_tokens.csv", 10000)
+tokens = getCreatedTokensInRangeCSV(18676722, 18769721, "test_tokens.csv", 10000)
 
 # @Thomas: comment out to ...
-tokens_01 = pd.read_csv("tokes_save_20726722_20769721.csv")
-tokens_02 = pd.read_csv("tokes_save_20676722_20726722.csv")
+# tokens_01 = pd.read_csv("tokes_save_20726722_20769721.csv")
+# tokens_02 = pd.read_csv("tokes_save_20676722_20726722.csv")
 
-tokens = pd.concat([tokens_01, tokens_02])
-tokens = tokens.drop_duplicates()
+# tokens = pd.concat([tokens_01, tokens_02])
+# tokens = tokens.drop_duplicates()
 #  ... here
 """
 Step 2: 
@@ -41,22 +41,22 @@ print(tokens2.head())
 # Above for some tests blocks for faster calculations
 # ==============================================
 # @Thomas: comment out this part, from here .....
-test_blocks = [20722172, 20722033, 20707459, 20701948, 20697358, 20687822, 20685413, 20684275, 20768025, 20763682, 20745892, 20729836]
+# test_blocks = [20722172, 20722033, 20707459, 20701948, 20697358, 20687822, 20685413, 20684275, 20768025, 20763682, 20745892, 20729836]
 
-df = pd.DataFrame(columns=['asset_id', 'creator', 'manager',
-                  'reserve', 'freeze', 'total', 'decimals', 'block'])
-for i in test_blocks:
-    assets = getCreatedAssetByBlock(i)
-    assets = [dict(item, **{'block': i}) for item in assets]
-    if len(assets) == 0:
-        continue
-    else:
-        df = df.append(assets, ignore_index=True, sort=False)
+# df = pd.DataFrame(columns=['asset_id', 'creator', 'manager',
+#                   'reserve', 'freeze', 'total', 'decimals', 'block'])
+# for i in test_blocks:
+#     assets = getCreatedAssetByBlock(i)
+#     assets = [dict(item, **{'block': i}) for item in assets]
+#     if len(assets) == 0:
+#         continue
+#     else:
+#         df = df.append(assets, ignore_index=True, sort=False)
 
-df = df[df["total"] > 1]
-df["pool_creation_round"] = df["asset_id"].apply(getPoolCreationRound)
-df["pool_address"] = df["asset_id"].apply(getPoolAddr)
-print(df)
+# df = df[df["total"] > 1]
+# df["pool_creation_round"] = df["asset_id"].apply(getPoolCreationRound)
+# df["pool_address"] = df["asset_id"].apply(getPoolAddr)
+# print(df)
 #  .... to here.
 # ==============================================
 # ==============================================
@@ -75,7 +75,7 @@ Returns a list of token dicts, where the token dicts have the information:
 
 """
 # @Thomas: comment out this part, from here ...
-tokendf = df.copy() # df = test dataframe
+# tokendf = df.copy() # df = test dataframe
 # ... to here.
 
 tokendf = tokens2.copy()
