@@ -1,0 +1,37 @@
+{
+    "KOWM7THRBQB57Q2LIDORFIJ5FD2WL4S2L6G6CFEEYMME7MIGVO5J2MRZ7M": {
+        "profit": 2.2053751892323654,
+        "algo": 9.0,
+        "asset": -1238475492
+    },
+    "TQCBFZUD7KRD2ECYRDPT5GJCWSNPGYG5KJG66JUKFRLNJEXUSCD7JQXNS4": {
+        "profit": -1.0661660000000008,
+        "algo": 1.0661660000000008,
+        "asset": 0
+    },
+    "WVJBCJ6Y574OD53JJBNO7LFZBBV7X5DJLCNWHRIPCUBRJJJNJEHPWAF6AE": {
+        "profit": -0.20422724946973525,
+        "algo": 0.19417700000000004,
+        "asset": -1413447
+    },
+    "M4VQ7C2KCIBN7QGNKSBK6KM5HQD5AO2HJUW52ZQPN6O55N7RYZ5TDMRSHU": {
+        "profit": 0,
+        "algo": 0.5,
+        "asset": 48264638
+    },
+    "33EBSE4M6TNJBLFL56VXXAII5MXM2ECM4M63QONI3FOKBD2WVJQAHSMZTA": {
+        "profit": 0,
+        "algo": 3.0,
+        "asset": 44039392
+    },
+    "4Q5CP3AKEVRKQF63UZJONXMHUR3L3QYFNTE4ZM2CORCITLQJEL53L75XEM": {
+        "profit": 0,
+        "algo": 4.0,
+        "asset": 317993882
+    },
+    "JOJCGKGTCDWOOHSF72G3SNY7KA35WP6PV5ABTKVRGG3J26NO22XTILU6TU": {
+        "profit": 0,
+        "algo": 2.0,
+        "asset": 256538205
+    }
+}

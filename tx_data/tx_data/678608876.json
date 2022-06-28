@@ -1,0 +1,136 @@
+{
+    "asa": 678608876,
+    "creator": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U",
+    "pool_address": "JSRPARV5EMGVYEOQE6R3456WOFDPWF36IRV3UWPZ4PTUM3SX43BOKA7H7E",
+    "pool_creation_round": 20048883,
+    "pool_token_asa": 678611024,
+    "manager": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U",
+    "reserve": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U",
+    "freeze": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY5HFKQ",
+    "first_liquidity_round": 20048918,
+    "transactions": [
+        {
+            "asset-config-transaction": {
+                "asset-id": 0,
+                "params": {
+                    "creator": "JSRPARV5EMGVYEOQE6R3456WOFDPWF36IRV3UWPZ4PTUM3SX43BOKA7H7E",
+                    "decimals": 6,
+                    "default-frozen": false,
+                    "name": "TinymanPool1.1 Sparrow -ALGO",
+                    "name-b64": "VGlueW1hblBvb2wxLjEgU3BhcnJvdyAtQUxHTw==",
+                    "total": 18446744073709552000,
+                    "unit-name": "TMPOOL11",
+                    "unit-name-b64": "VE1QT09MMTE=",
+                    "url": "https://tinyman.org",
+                    "url-b64": "aHR0cHM6Ly90aW55bWFuLm9yZw=="
+                }
+            },
+            "close-rewards": 0,
+            "closing-amount": 0,
+            "confirmed-round": 20048883,
+            "created-asset-index": 678611024,
+            "fee": 1000,
+            "first-valid": 20048876,
+            "genesis-hash": "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+            "genesis-id": "mainnet-v1.0",
+            "group": "uQMPCQ0kCZwm32cPGsjhLMg60eZN5pbZj5zHnjjt/ag=",
+            "id": "C4QL3IXXVUQJUWE6T74HLEEIFH6GV46POACLG46ZYHI46JL5O4YA",
+            "intra-round-offset": 36,
+            "last-valid": 20049876,
+            "receiver-rewards": 0,
+            "round-time": 1648396329,
+            "sender": "JSRPARV5EMGVYEOQE6R3456WOFDPWF36IRV3UWPZ4PTUM3SX43BOKA7H7E",
+            "sender-rewards": 0,
+            "signature": {
+                "logicsig": {
+                    "args": [],
+                    "logic": "BCAIAQAA7P/KwwIDBAUGJSQNRDEJMgMSRDEVMgMSRDEgMgMSRDIEIg1EMwEAMQASRDMBECEHEkQzARiB2JzChwISRDMBGSISMwEbIQQSEDcBGgCACWJvb3RzdHJhcBIQQABcMwEZIxJEMwEbgQISNwEaAIAEc3dhcBIQQAI7MwEbIhJENwEaAIAEbWludBJAATs3ARoAgARidXJuEkABmDcBGgCABnJlZGVlbRJAAls3ARoAgARmZWVzEkACeQAhBiEFJCMSTTIEEkQ3ARoBFyUSNwEaAhckEhBEMwIAMQASRDMCECEEEkQzAiEjEkQzAiIjHBJEMwIjIQcSRDMCJCMSRDMCJYAIVE1QT09MMTESRDMCJlEAD4APVGlueW1hblBvb2wxLjEgEkQzAieAE2h0dHBzOi8vdGlueW1hbi5vcmcSRDMCKTIDEkQzAioyAxJEMwIrMgMSRDMCLDIDEkQzAwAxABJEMwMQIQUSRDMDESUSRDMDFDEAEkQzAxIjEkQkIxNAABAzAQEzAgEIMwMBCDUBQgGxMwQAMQASRDMEECEFEkQzBBEkEkQzBBQxABJEMwQSIxJEMwEBMwIBCDMDAQgzBAEINQFCAXwyBCEGEkQ3ARwBMQATRDcBHAEzBBQSRDMCADEAE0QzAhQxABJEMwMAMwIAEkQzAhElEkQzAxQzAwczAxAiEk0xABJEMwMRIzMDECISTSQSRDMEADEAEkQzBBQzAgASRDMBATMEAQg1AUIBETIEIQYSRDcBHAExABNENwEcATMCFBJEMwMUMwMHMwMQIhJNNwEcARJEMwIAMQASRDMCFDMEABJEMwIRJRJEMwMAMQASRDMDFDMDBzMDECISTTMEABJEMwMRIzMDECISTSQSRDMEADEAE0QzBBQxABJEMwEBMwIBCDMDAQg1AUIAkDIEIQUSRDcBHAExABNEMwIANwEcARJEMwIAMQATRDMDADEAEkQzAhQzAgczAhAiEk0xABJEMwMUMwMHMwMQIhJNMwIAEkQzAQEzAwEINQFCAD4yBCEEEkQ3ARwBMQATRDMCFDMCBzMCECISTTcBHAESRDMBATMCAQg1AUIAEjIEIQQSRDMBATMCAQg1AUIAADMAADEAE0QzAAcxABJEMwAINAEPQw=="
+                }
+            },
+            "tx-type": "acfg"
+        },
+        {
+            "asset-transfer-transaction": {
+                "amount": 0,
+                "asset-id": 678611024,
+                "close-amount": 0,
+                "receiver": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U"
+            },
+            "close-rewards": 0,
+            "closing-amount": 0,
+            "confirmed-round": 20048912,
+            "fee": 1000,
+            "first-valid": 20048883,
+            "genesis-hash": "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+            "genesis-id": "mainnet-v1.0",
+            "id": "WG4KGB4OEIJUN4OWR2VQFPFTG3K57LC3MS4QTFZRWEOOIBKXUANQ",
+            "intra-round-offset": 31,
+            "last-valid": 20049883,
+            "receiver-rewards": 0,
+            "round-time": 1648396456,
+            "sender": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U",
+            "sender-rewards": 0,
+            "signature": {
+                "sig": "oDCCW6MFoZIMftWKuA54GVGrKdiw5n/UHTvk4+OJbDebRDGGIyTqskd2xjETLIwmblXZ2lAGneK+M5/mYfMZDw=="
+            },
+            "tx-type": "axfer"
+        },
+        {
+            "asset-transfer-transaction": {
+                "amount": 1413213,
+                "asset-id": 678611024,
+                "close-amount": 0,
+                "receiver": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U"
+            },
+            "close-rewards": 0,
+            "closing-amount": 0,
+            "confirmed-round": 20048918,
+            "fee": 1000,
+            "first-valid": 20048913,
+            "genesis-hash": "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+            "genesis-id": "mainnet-v1.0",
+            "group": "Pp7DryjZAg4M6oJnlEyviQwfusPa/uOBzLf9F+31j1Q=",
+            "id": "YS7TEOKXDRXMJ4WBX6IZNE3QZCDFGDKZX5QGVNOEBF5BH5O3SY4A",
+            "intra-round-offset": 81,
+            "last-valid": 20049913,
+            "receiver-rewards": 0,
+            "round-time": 1648396482,
+            "sender": "JSRPARV5EMGVYEOQE6R3456WOFDPWF36IRV3UWPZ4PTUM3SX43BOKA7H7E",
+            "sender-rewards": 0,
+            "signature": {
+                "logicsig": {
+                    "args": [],
+                    "logic": "BCAIAQAA7P/KwwIDBAUGJSQNRDEJMgMSRDEVMgMSRDEgMgMSRDIEIg1EMwEAMQASRDMBECEHEkQzARiB2JzChwISRDMBGSISMwEbIQQSEDcBGgCACWJvb3RzdHJhcBIQQABcMwEZIxJEMwEbgQISNwEaAIAEc3dhcBIQQAI7MwEbIhJENwEaAIAEbWludBJAATs3ARoAgARidXJuEkABmDcBGgCABnJlZGVlbRJAAls3ARoAgARmZWVzEkACeQAhBiEFJCMSTTIEEkQ3ARoBFyUSNwEaAhckEhBEMwIAMQASRDMCECEEEkQzAiEjEkQzAiIjHBJEMwIjIQcSRDMCJCMSRDMCJYAIVE1QT09MMTESRDMCJlEAD4APVGlueW1hblBvb2wxLjEgEkQzAieAE2h0dHBzOi8vdGlueW1hbi5vcmcSRDMCKTIDEkQzAioyAxJEMwIrMgMSRDMCLDIDEkQzAwAxABJEMwMQIQUSRDMDESUSRDMDFDEAEkQzAxIjEkQkIxNAABAzAQEzAgEIMwMBCDUBQgGxMwQAMQASRDMEECEFEkQzBBEkEkQzBBQxABJEMwQSIxJEMwEBMwIBCDMDAQgzBAEINQFCAXwyBCEGEkQ3ARwBMQATRDcBHAEzBBQSRDMCADEAE0QzAhQxABJEMwMAMwIAEkQzAhElEkQzAxQzAwczAxAiEk0xABJEMwMRIzMDECISTSQSRDMEADEAEkQzBBQzAgASRDMBATMEAQg1AUIBETIEIQYSRDcBHAExABNENwEcATMCFBJEMwMUMwMHMwMQIhJNNwEcARJEMwIAMQASRDMCFDMEABJEMwIRJRJEMwMAMQASRDMDFDMDBzMDECISTTMEABJEMwMRIzMDECISTSQSRDMEADEAE0QzBBQxABJEMwEBMwIBCDMDAQg1AUIAkDIEIQUSRDcBHAExABNEMwIANwEcARJEMwIAMQATRDMDADEAEkQzAhQzAgczAhAiEk0xABJEMwMUMwMHMwMQIhJNMwIAEkQzAQEzAwEINQFCAD4yBCEEEkQ3ARwBMQATRDMCFDMCBzMCECISTTcBHAESRDMBATMCAQg1AUIAEjIEIQQSRDMBATMCAQg1AUIAADMAADEAE0QzAAcxABJEMwAINAEPQw=="
+                }
+            },
+            "tx-type": "axfer"
+        },
+        {
+            "asset-transfer-transaction": {
+                "amount": 1413213,
+                "asset-id": 678611024,
+                "close-amount": 0,
+                "receiver": "JSRPARV5EMGVYEOQE6R3456WOFDPWF36IRV3UWPZ4PTUM3SX43BOKA7H7E"
+            },
+            "close-rewards": 0,
+            "closing-amount": 0,
+            "confirmed-round": 20049183,
+            "fee": 1000,
+            "first-valid": 20049177,
+            "genesis-hash": "wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=",
+            "genesis-id": "mainnet-v1.0",
+            "group": "6CnBiTDok92vnxmo3YbHvS1IrPuxz4UDmnF88Ihad5s=",
+            "id": "MTWQJ5BAGUS7NPUVN3KWVIK6RCWCT22TFDWSHNV3P25R3CWMWR3A",
+            "intra-round-offset": 57,
+            "last-valid": 20050177,
+            "receiver-rewards": 0,
+            "round-time": 1648397644,
+            "sender": "74XV6W7FK526FZGARDIEFJZAVEGPONV7QNL7A3MFFULGF5ZGCVUSHHIU2U",
+            "sender-rewards": 0,
+            "signature": {
+                "sig": "gTKSiQ3RqQVEwQnm76P42eZScklM/SAqIFtu9hFr/at308WcFYgVSOqz6CQ5Dd06qF8gNn7/Wa3UYJcEPRLkDg=="
+            },
+            "tx-type": "axfer"
+        }
+    ]
+}

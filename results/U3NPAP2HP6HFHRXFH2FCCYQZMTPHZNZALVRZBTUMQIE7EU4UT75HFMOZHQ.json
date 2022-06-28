@@ -1,0 +1,22 @@
+{
+    "3SM7RD3JMRDCF77UV5IELGQVXIHNXPQTPLJWUCMTH4PIFZKMOGOWTKDD7E": {
+        "profit": 0.08564345387453853,
+        "algo": -0.09025599999999989,
+        "asset": -10
+    },
+    "HFKXHXLHMBBVEMZMRU6J3GTMF33DRITOEJ2ZW5Z5FXTJXCZQCH5FKYWOW4": {
+        "profit": 0,
+        "algo": 40.0,
+        "asset": 80484
+    },
+    "YET3USQ6NQDD5QBCJ2IOL2MDN2HORNNDSFS6UMZD4AHL3KBEP3N27VQECM": {
+        "profit": 0,
+        "algo": 5.0,
+        "asset": 10662
+    },
+    "UF7BEXXP5XZZDZLFAFBN3ERKCYZ4BNTQT5R2S4MVFKHTO66GATSPJVRA2E": {
+        "profit": 0,
+        "algo": 50.0,
+        "asset": 103122
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "ACTVHYX7SAZYMZX56T7C4KJCNNXPWV2DWW3YRUM2Y6JYOD4CSZZASFRWSA": {
+        "profit": -5.461793078431373,
+        "algo": 4.971597,
+        "asset": -5
+    },
+    "NDMQUE4YEKQOMWPRUVCW6UG4Y6DTC6QPDNXCJ24WAYIPCDXDK7XNTYF4PE": {
+        "profit": 0,
+        "algo": 52.347841,
+        "asset": 345410
+    },
+    "WFVNAGISOPDJ6O3CBRY4KZC7OKYWFU7RG2RBTKMLDPEV3WGJRQGOWFVDSU": {
+        "profit": 0.002,
+        "algo": -0.002,
+        "asset": -345410
+    }
+}

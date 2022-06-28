@@ -1,0 +1,17 @@
+{
+    "33EBSE4M6TNJBLFL56VXXAII5MXM2ECM4M63QONI3FOKBD2WVJQAHSMZTA": {
+        "profit": 0,
+        "algo": 2.0,
+        "asset": 82398737158
+    },
+    "5IVCOJNXTCWXEDQGJNCF7ZZ33Y7WKDAFL3EDXICZ2AZNVMSEILQZCQS5NI": {
+        "profit": 0,
+        "algo": 240.789496,
+        "asset": 154919332848
+    },
+    "4F3RJ2KK4UBGW67F2KMKBUQL537OQEQOHC5CFO3YWYPRGOK67X6B5IRQGE": {
+        "profit": 0.002,
+        "algo": -0.002,
+        "asset": -154919332848
+    }
+}

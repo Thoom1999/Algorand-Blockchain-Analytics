@@ -1,0 +1,17 @@
+{
+    "AXAJ7AJVQSPIVEMMWERDP3UEL2RED6RE52EOPP25LU5X5LMDHKPDPQA7PQ": {
+        "profit": 0,
+        "algo": 0.5,
+        "asset": 166332999666
+    },
+    "QDOIR6426SUM6KO5LR3HN2X42FE762KCPSA4IS6AYPPUBRSYHJAPWDKSAI": {
+        "profit": 0,
+        "algo": 0.1,
+        "asset": 41383092997
+    },
+    "YHBZTTW4KKR2Q6CNAVDQU6WJUAULB5B7JFFRPWJWCEUVAWIFYXOBESEBGA": {
+        "profit": 0.098873,
+        "algo": -0.098873,
+        "asset": -41383092977
+    }
+}

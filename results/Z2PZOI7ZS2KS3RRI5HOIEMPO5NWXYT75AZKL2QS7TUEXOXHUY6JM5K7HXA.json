@@ -1,0 +1,17 @@
+{
+    "ZNV3TYO7KDZBSDO2NYLHDLHPAPRV73EDU5PW6OHURDCFFWHKC5U6UIFA6Y": {
+        "profit": 0,
+        "algo": 2.0,
+        "asset": 33
+    },
+    "6ZCGMXZ4ZMOCR6IXH2ILJHAMF46TAPIJXAC2PQA3ERPHUUM7PX5T43SQAM": {
+        "profit": 0,
+        "algo": 1.0,
+        "asset": 34
+    },
+    "46BRGJLSIFRF5IEK2ECOFWUX7JGIJIWBOP4HMAQB4S6RXLNB2Y56M6SUOM": {
+        "profit": 0,
+        "algo": 0.5,
+        "asset": 35
+    }
+}

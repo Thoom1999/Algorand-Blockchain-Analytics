@@ -5,7 +5,7 @@ import requests
 import json
 from functools import reduce
 import pandas as pd
-from sympy import limit
+# from sympy import limit
 from tinyman.v1.contracts import get_pool_logicsig
 import threading
 import time
@@ -29,7 +29,7 @@ def getJSON(url: str, cnt = 0):
         response = requests.get(url)
         if response.status_code == 200: 
             return response.json()
-        elif cnt <= 3 & 'timeout' in response.json()['message']: 
+        elif cnt <= 3 and 'timeout' in response.json()['message']: 
             time.sleep(3)
             cnt += 1
             getJSON(url, cnt)
@@ -301,16 +301,16 @@ def getMatchingBuySellTxs(txs_lst, similarity = 0.05):
     
     return(detected_addr)
 
-def createChunk(start: int, end: int, size: int) -> list:
-    """Divide a range of numbers in chunks of size 'size'"""
-    result: list = []
-    end += 1
-    step: int = int((end - start) / size)
-    for i in range(step): 
-        result.append(list(range(start + i * size, start + (i + 1) * size)))
-    if start + step * size != end: 
-        result.append(list(range(start + step * size, end)))
-    return result
+# def createChunk(start: int, end: int, size: int) -> list: UNUSEFUL
+#     """Divide a range of numbers in chunks of size 'size'"""
+#     result: list = []
+#     end += 1
+#     step: int = int((end - start) / size)
+#     for i in range(step): 
+#         result.append(list(range(start + i * size, start + (i + 1) * size)))
+#     if start + step * size != end: 
+#         result.append(list(range(start + step * size, end)))
+#     return result
 
 def createAndExecuteThreads(nbr: int, func) -> None: 
     threads: list = []
@@ -321,7 +321,7 @@ def createAndExecuteThreads(nbr: int, func) -> None:
     for thread in threads: 
         thread.join()
 
-def addLiquidityForFirstTime(poolAddr: str, liquidityToken: int): 
+def addLiquidityForFirstTime(poolAddr: str, liquidityToken: int) -> int: 
     query = getJSON(f"{base_URL}/v2/accounts/{poolAddr}/transactions")
     txs = list(filter(lambda tx: "asset-transfer-transaction" in tx,
                 query["transactions"]))
@@ -350,43 +350,133 @@ def getLiquidityToken(asset_id, asset2_id = 0):
 
 # def oneFuncToRuleThemAll(token_dict_path, txs_range):
 # If Peters dict does not include pool creation round or pool creation address 
-token_dict_path = "assetinfos_20000000_21000000.json"
-with open(token_dict_path, "r") as fin: 
-        token_dict = json.load(fin)
+# token_dict_path = "assetinfos_20000000_21000000.json"
+# with open(token_dict_path, "r") as fin: 
+#         token_dict = json.load(fin)
 
-tokens_w_pool = list()
-for token in token_dict: 
-    for acc in ['manager', 'reserve', 'freeze', 'creator']: 
-        if acc not in token.keys(): 
-            token[acc] = 'None'
-    token['pool_creation_round'] = getPoolCreationRound(token['asset_id'])
-    if token['pool_creation_round'] != -1: 
-        token['pool_address'] = getPoolAddr(token['asset_id'])
-        tokens_w_pool.append(token)
+# tokens_w_pool = list()
+# for token in token_dict: 
+#     for acc in ['manager', 'reserve', 'freeze', 'creator']: 
+#         if acc not in token.keys(): 
+#             token[acc] = 'None'
+#     token['pool_creation_round'] = getPoolCreationRound(token['asset_id'])
+#     if token['pool_creation_round'] != -1: 
+#         token['pool_address'] = getPoolAddr(token['asset_id'])
+#         tokens_w_pool.append(token)
+#     else: 
+#         continue
+
+# ###############################
+# token_dict_w_ext_txs = []
+# for asset in token_dict: 
+#     asset['external_txs'] = list()
+#     # Add asset['pool_liquidity_add'] with function
+#     # and change getAssetTxInRange to get all txs which interact with the liquidity pool without the 
+#     token_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = asset['asset_id'])
+#     algo_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = 0)
+#     # txs_in_range = getAssetTxInRange(, , asset["asset_id"], 0, asset['pool_address'])
+#     # ########## Change below
+#     for txs in txs_in_range: 
+#         if checkIfTxIsExternal(txs, asset): 
+#             if checkIfBuy(txs, asset): 
+#                 txs['type'] = 'buy'
+#                 asset['external_txs'].append(txs)
+#             else: 
+#                 txs['type'] = 'sell'
+#                 asset['external_txs'].append(txs)
+#         else: 
+#             continue
+#     if len(asset['external_txs']) >= 2: 
+#         token_dict_w_ext_txs.append(asset)
+#     #  to here
+
+def getProfit(beforeAlgo: int, beforeAsset: int, afterAlgo: int, afterAsset: int) -> int: 
+    if beforeAsset == 0:
+        return afterAlgo
     else: 
-        continue
+        c = afterAsset * beforeAlgo / beforeAsset
+    return afterAlgo - c
 
-###############################
-token_dict_w_ext_txs = []
-for asset in token_dict: 
-    asset['external_txs'] = list()
-    # Add asset['pool_liquidity_add'] with function
-    # and change getAssetTxInRange to get all txs which interact with the liquidity pool without the 
-    token_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = asset['asset_id'])
-    algo_txs_in_range = getTxOfAddr(asset['pool_address'], asset["pool_creation_round"], asset["pool_creation_round"] + txs_range, asset_id = 0)
-    # txs_in_range = getAssetTxInRange(, , asset["asset_id"], 0, asset['pool_address'])
-    # ########## Change below
-    for txs in txs_in_range: 
-        if checkIfTxIsExternal(txs, asset): 
-            if checkIfBuy(txs, asset): 
-                txs['type'] = 'buy'
-                asset['external_txs'].append(txs)
-            else: 
-                txs['type'] = 'sell'
-                asset['external_txs'].append(txs)
-        else: 
-            continue
-    if len(asset['external_txs']) >= 2: 
-        token_dict_w_ext_txs.append(asset)
-    #  to here
+def calculateProfit(poolAddr: str, startRound: int, blockLimit=150) -> dict: 
+    n = startRound + blockLimit
+    query = getJSON(f"{base_URL}/v2/accounts/{poolAddr}/transactions?max-round={n}")
+    print("request done")
+    txs = query["transactions"]
+    filteredTxs = []
+    result = []
+    a = 0
+    b = 0
+    for tx in txs: 
+        if startRound <= tx["first-valid"] < startRound + blockLimit: 
+            filteredTxs.append(tx)
+    for i in range(len(filteredTxs) - 1, 0, -1): 
+        if filteredTxs[i]["tx-type"] == "pay":
+            sender = filteredTxs[i]["sender"]
+            if filteredTxs[i-1]["tx-type"] == "axfer":
+                r = {
+                        "round": filteredTxs[i]["confirmed-round"], 
+                        "addr": sender,
+                        "type": "buy", 
+                        "asset": filteredTxs[i-1]["asset-transfer-transaction"]["amount"], 
+                        "algo": filteredTxs[i]["payment-transaction"]["amount"] / 1000000
+                    }
+                result.append(r)
+        elif filteredTxs[i]["tx-type"] == "axfer": 
+            sender = filteredTxs[i]["sender"]
+            a += 1
+            if filteredTxs[i-1]["tx-type"] == "pay" and sender != poolAddr: 
+                b +=1
+                r = {
+                        "round": filteredTxs[i]["first-valid"], 
+                        "addr": sender,
+                        "type": "sell", 
+                        "asset": filteredTxs[i]["asset-transfer-transaction"]["amount"], 
+                        "algo": filteredTxs[i-1]["payment-transaction"]["amount"] / 1000000
+                    }
+                result.append(r)
+    profit = dict()
+    addr = []
+    for element in result: 
+        if element["addr"] not in addr:
+            addr.append(element["addr"])
+    for element in addr: 
+        profit[element] = {"profit": 0, "algo": 0, "asset": 0}
 
+    for r in result: 
+        if r["type"] == "buy":
+            profit[r["addr"]]["algo"] += r["algo"]
+            profit[r["addr"]]["asset"] += r["asset"]
+        elif r["type"] == "sell": 
+            # if profit[r["addr"]]["asset"] >= r["asset"] and profit[r["addr"]]["algo"] != 0: 
+            if True:
+                profit[r["addr"]]["profit"] += getProfit(profit[r["addr"]]["algo"], profit[r["addr"]]["asset"], r["algo"], r["asset"])
+                profit[r["addr"]]["algo"] -= r["algo"]
+                profit[r["addr"]]["asset"] -= r["asset"]
+
+    return profit 
+    # print(startRound, startRound + blockLimit)
+    # print(a, b)
+
+
+# def calculateProfit(jsonFilepath: str): 
+#     with open(jsonFilepath) as jsonFile:
+#         j = json.load(jsonFile)
+#         jsonFile.close()
+#     # print("json load")
+
+#     for tx in j["transactions"]:
+#         if tx["tx-type"] == "axfer": 
+#             blockTxs = getBlockInfos(tx["confirmed-round"])["transactions"]
+#             try: 
+#                 group = tx["group"]
+#                 buffer = []
+#                 for trx in blockTxs: 
+#                     try: 
+#                         # print(trx["group"])
+#                         if trx["group"] == group:
+#                             buffer.append(trx)
+#                     except: 
+#                         continue
+#                 print(len(buffer))
+#             except: 
+#                 continue
